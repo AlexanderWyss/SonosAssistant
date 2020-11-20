@@ -48,6 +48,7 @@ export class AppService {
   preset(name: string) {
     console.log('preset: ' + name);
     const preset = this.presetService.getPresetByName(name);
+    console.log(preset);
     if (preset && preset.length > 0) {
       console.log('match: preset ' + name + ' [' + preset.toString() + ']');
       const group = preset[0];

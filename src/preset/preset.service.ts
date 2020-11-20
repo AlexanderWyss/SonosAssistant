@@ -8,6 +8,6 @@ export class PresetService {
   };
 
   getPresetByName(name: string): string[] {
-    return this.presets[name.toLowerCase()];
+    return this.presets[name.toLowerCase().trim()];
   }
 }
