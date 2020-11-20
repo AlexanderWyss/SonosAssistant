@@ -17,38 +17,36 @@ export class AppService {
   call(text: string) {
     console.log('api: ' + text);
     if (text.endsWith('hinzufügen')) {
-      console.log('add');
-      text = text.substring(0, text.length - 'hinzufügen'.length);
-      const split = text.split('zu');
-      const device = this.getDeviceByPhonetic(colognePhonetic(split[0]));
-      const group = this.getDeviceByPhonetic(colognePhonetic(split[1]));
-      if (device && group) {
-        console.log('match: ' + device.Name + ' add to ' + group.Name);
-        device.JoinGroup(group.Name).catch(console.error);
-      }
+      this.add(text.substring(0, text.length - 'hinzufügen'.length));
     }
     if (text.endsWith('entfernen')) {
-      console.log('remove');
-      text = text.substring(0, text.length - 'entfernen'.length);
-      const device = this.getDeviceByPhonetic(colognePhonetic(text));
-      if (device) {
-        console.log('match: remove ' + device.Name);
-        this.leaveGroup(device);
-      }
+      this.remove(text.substring(0, text.length - 'entfernen'.length));
     }
   }
 
-  getDevices(): string[] {
-    return this.manager.Devices.map(d => d.Name);
+  add(text: string) {
+    console.log('add: ' + text);
+    const split = text.split(' zu ');
+    const device = this.getDeviceByPhonetic(split[0]);
+    const group = this.getDeviceByPhonetic(split[1]);
+    if (device && group) {
+      console.log('match: ' + device.Name + ' add to ' + group.Name);
+      device.JoinGroup(group.Name).catch(console.error);
+    }
   }
 
-
-  getDeviceByName(deviceName: string): SonosDevice {
-    return this.manager.Devices.filter(device => device.Name === deviceName)[0];
+  remove(text: string) {
+    console.log('remove: ' + text);
+    const device = this.getDeviceByPhonetic(text);
+    if (device) {
+      console.log('match: remove ' + device.Name);
+      this.leaveGroup(device);
+    }
   }
 
-  getDeviceByPhonetic(phonetic: string): SonosDevice {
-    const filter = this.manager.Devices.filter(device => colognePhonetic(device.Name) === phonetic);
+  getDeviceByPhonetic(deviceName: string): SonosDevice {
+    const phoneticDeviceName = colognePhonetic(deviceName);
+    const filter = this.manager.Devices.filter(device => colognePhonetic(device.Name) === phoneticDeviceName);
     if (filter.length > 0) {
       return filter[0];
     }
@@ -59,7 +57,11 @@ export class AppService {
     device.AVTransportService.BecomeCoordinatorOfStandaloneGroup().catch(console.error);
   }
 
-  phoneticMatch(a: string, b: string): boolean {
-    return colognePhonetic(a) === colognePhonetic(b);
+  getDevices(): string[] {
+    return this.manager.Devices.map(d => d.Name);
+  }
+
+  getDeviceByName(deviceName: string): SonosDevice {
+    return this.manager.Devices.filter(device => device.Name === deviceName)[0];
   }
 }

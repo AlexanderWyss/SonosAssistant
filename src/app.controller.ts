@@ -12,6 +12,18 @@ export class AppController {
     this.appService.call(text);
   }
 
+  @Post('api/add')
+  @HttpCode(200)
+  apiAdd(@Body('text') text: string): void {
+    this.appService.add(text);
+  }
+
+  @Post('api/remove')
+  @HttpCode(200)
+  apiRemove(@Body('text') text: string): void {
+    this.appService.remove(text);
+  }
+
   @Post('add')
   @HttpCode(200)
   add(@Body('deviceName') deviceName: string, @Body('groupDeviceName') groupDeviceName: string): void {
@@ -22,12 +34,6 @@ export class AppController {
   @HttpCode(200)
   remove(@Body('deviceName') deviceName: string): void {
     this.appService.leaveGroup(this.appService.getDeviceByName(deviceName));
-  }
-
-  @Post('match')
-  @HttpCode(200)
-  match(@Body('deviceName') deviceName: string, @Body('groupDeviceName') groupDeviceName: string): boolean {
-    return this.appService.phoneticMatch(deviceName, groupDeviceName);
   }
 
   @Get('devices')
