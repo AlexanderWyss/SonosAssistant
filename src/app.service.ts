@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { SonosManager } from '@svrooij/sonos';
 import SonosDevice from '@svrooij/sonos/lib/sonos-device';
 import { colognePhonetic } from 'cologne-phonetic';
+import { PresetService } from './preset/preset.service';
 
 @Injectable()
 export class AppService {
   private manager: SonosManager;
 
-  constructor() {
+  constructor(private readonly presetService: PresetService) {
     this.manager = new SonosManager();
     this.manager.InitializeFromDevice('192.168.1.120')
       .then(console.log)
@@ -44,6 +45,19 @@ export class AppService {
     }
   }
 
+  preset(name: string) {
+    console.log('preset: ' + name);
+    const preset = this.presetService.getPresetByName(name);
+    if (preset && preset.length > 0) {
+      console.log('match: preset ' + name + ' [' + preset.toString() + ']');
+      const group = preset[0];
+      this.leaveGroup(this.getDeviceByName(group));
+      for(let i = 1; i < preset.length; i++) {
+        this.getDeviceByName(preset[i]).JoinGroup(group).catch(console.error);
+      }
+    }
+  }
+
   getDeviceByPhonetic(deviceName: string): SonosDevice {
     const phoneticDeviceName = colognePhonetic(deviceName);
     const filter = this.manager.Devices.filter(device => colognePhonetic(device.Name) === phoneticDeviceName);
@@ -62,6 +76,6 @@ export class AppService {
   }
 
   getDeviceByName(deviceName: string): SonosDevice {
-    return this.manager.Devices.filter(device => device.Name === deviceName)[0];
+    return this.manager.Devices.filter(device => device.Name.toLowerCase() === deviceName.toLowerCase())[0];
   }
 }
