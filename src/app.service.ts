@@ -10,10 +10,18 @@ export class AppService {
   private manager: SonosManager;
 
   constructor(private readonly presetService: PresetService) {
-    this.manager = new SonosManager();
-    this.manager.InitializeFromDevice('192.168.1.120')
-      .then(console.log)
-      .catch(console.error);
+    this.initializeSonosManager();
+  }
+
+  private initializeSonosManager() {
+    const manager = new SonosManager();
+    manager.InitializeFromDevice('192.168.1.120')
+      .catch(console.error)
+      .finally(() => {
+        this.manager = manager;
+        console.log('initialized');
+        setTimeout(() => this.initializeSonosManager(), 3600000);
+      });
   }
 
   call(text: string) {
