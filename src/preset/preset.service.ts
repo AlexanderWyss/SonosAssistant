@@ -4,6 +4,8 @@ import { Injectable } from '@nestjs/common';
 export class PresetService {
   private presets = {
     alexander: ['Alexander', 'Bad', 'Küche', 'Mobil'],
+    bad: ['Alexander', 'Bad'],
+    küche: ['Alexander', 'Küche'],
     party: ['Alexander', 'Bad', 'Küche', 'Mobil', 'Adam', 'Schlafzimmer Simone', 'Adrian‘s TV Room']
   };
 

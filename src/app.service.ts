@@ -3,6 +3,7 @@ import { SonosManager } from '@svrooij/sonos';
 import SonosDevice from '@svrooij/sonos/lib/sonos-device';
 import { colognePhonetic } from 'cologne-phonetic';
 import { PresetService } from './preset/preset.service';
+import { BecomeCoordinatorOfStandaloneGroupResponse } from '@svrooij/sonos/lib/services';
 
 @Injectable()
 export class AppService {
@@ -52,10 +53,18 @@ export class AppService {
     if (preset && preset.length > 0) {
       console.log('match: preset ' + name + ' [' + preset.toString() + ']');
       const group = preset[0];
-      this.leaveGroup(this.getDeviceByName(group));
-      for(let i = 1; i < preset.length; i++) {
-        this.getDeviceByName(preset[i]).JoinGroup(group).catch(console.error);
-      }
+      const device = this.getDeviceByName(group);
+      device.ZoneGroupTopologyService.GetParsedZoneGroupState().then(async zones => {
+        const zone = zones.find(zone =>
+          zone.members.find(member => member.name.toLowerCase() === group.toLowerCase()));
+        if (zone && zone.members.length > 1) {
+          await this.leaveGroup(device);
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+        for (let i = 1; i < preset.length; i++) {
+          await this.getDeviceByName(preset[i]).JoinGroup(group);
+        }
+      });
     }
   }
 
@@ -68,8 +77,8 @@ export class AppService {
     return null;
   }
 
-  leaveGroup(device: SonosDevice) {
-    device.AVTransportService.BecomeCoordinatorOfStandaloneGroup().catch(console.error);
+  leaveGroup(device: SonosDevice): Promise<BecomeCoordinatorOfStandaloneGroupResponse> {
+    return device.AVTransportService.BecomeCoordinatorOfStandaloneGroup();
   }
 
   getDevices(): string[] {
