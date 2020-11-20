@@ -19,30 +19,34 @@ export class AppService {
   call(text: string) {
     console.log('api: ' + text);
     if (text.endsWith('hinzufügen')) {
-      this.add(text.substring(0, text.length - 'hinzufügen'.length));
+      this.add(text.substring(0, text.length - 'hinzufügen'.length)).catch(console.error);
     }
     if (text.endsWith('entfernen')) {
-      this.remove(text.substring(0, text.length - 'entfernen'.length));
+      this.remove(text.substring(0, text.length - 'entfernen'.length)).catch(console.error);
     }
   }
 
-  add(text: string) {
+  async add(text: string) {
     console.log('add: ' + text);
     const split = text.split(' zu ');
-    const device = this.getDeviceByPhonetic(split[0]);
+    const devices = this.getDevicesByPhonetic(split[0]);
     const group = this.getDeviceByPhonetic(split[1]);
-    if (device && group) {
-      console.log('match: ' + device.Name + ' add to ' + group.Name);
-      device.JoinGroup(group.Name).catch(console.error);
+    if (devices && devices.length > 0 && group) {
+      console.log('match: [' + devices.map(device => device.Name).toString() + '] added to ' + group.Name);
+      for (const device of devices) {
+        await device.JoinGroup(group.Name);
+      }
     }
   }
 
-  remove(text: string) {
+  async remove(text: string) {
     console.log('remove: ' + text);
-    const device = this.getDeviceByPhonetic(text);
-    if (device) {
-      console.log('match: remove ' + device.Name);
-      this.leaveGroup(device);
+    const devices = this.getDevicesByPhonetic(text);
+    if (devices && devices.length > 0) {
+      console.log('match: remove [' + devices.map(device => device.Name).toString() + ']');
+      for (const device of devices) {
+        await this.leaveGroup(device);
+      }
     }
   }
 
@@ -75,6 +79,10 @@ export class AppService {
       return filter[0];
     }
     return null;
+  }
+
+  getDevicesByPhonetic(text: string): SonosDevice[] {
+    return text.split(' und ').map(deviceName => this.getDeviceByPhonetic(deviceName));
   }
 
   leaveGroup(device: SonosDevice): Promise<BecomeCoordinatorOfStandaloneGroupResponse> {

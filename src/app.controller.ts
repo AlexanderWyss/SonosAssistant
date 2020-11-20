@@ -15,13 +15,13 @@ export class AppController {
   @Post('api/add')
   @HttpCode(200)
   apiAdd(@Body('text') text: string): void {
-    this.appService.add(text);
+    this.appService.add(text).catch(console.error);
   }
 
   @Post('api/remove')
   @HttpCode(200)
   apiRemove(@Body('text') text: string): void {
-    this.appService.remove(text);
+    this.appService.remove(text).catch(console.error);
   }
   @Post('api/preset')
   @HttpCode(200)
@@ -38,7 +38,7 @@ export class AppController {
   @Post('remove')
   @HttpCode(200)
   remove(@Body('deviceName') deviceName: string): void {
-    this.appService.leaveGroup(this.appService.getDeviceByName(deviceName));
+    this.appService.leaveGroup(this.appService.getDeviceByName(deviceName)).catch(console.error);
   }
 
   @Get('devices')
