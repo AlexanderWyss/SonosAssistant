@@ -24,6 +24,12 @@ export class AppController {
     this.appService.leaveGroup(this.appService.getDeviceByName(deviceName));
   }
 
+  @Post('match')
+  @HttpCode(200)
+  match(@Body('deviceName') deviceName: string, @Body('groupDeviceName') groupDeviceName: string): boolean {
+    return this.appService.phoneticMatch(deviceName, groupDeviceName);
+  }
+
   @Get('devices')
   devices(): string[] {
     return this.appService.getDevices();
