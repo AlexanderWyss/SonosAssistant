@@ -23,9 +23,11 @@ export class AppController {
   apiRemove(@Body('text') text: string): void {
     this.appService.remove(text).catch(console.error);
   }
+
   @Post('api/preset')
   @HttpCode(200)
-  apiPreset(@Body('name') name: string): void {
+  apiPreset(@Body('name') name: string, @Body('createdAt') createdAt: string): void {
+    console.log('createdAt: ' + createdAt);
     this.appService.preset(name);
   }
 
