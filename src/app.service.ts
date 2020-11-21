@@ -65,12 +65,12 @@ export class AppService {
     if (preset && preset.length > 0) {
       console.log('match: preset ' + name + ' [' + preset.toString() + ']');
       const group = preset[0];
-      const device = this.getDeviceByName(group);
-      device.ZoneGroupTopologyService.GetParsedZoneGroupState().then(async zones => {
+      const groupDevice = this.getDeviceByName(group);
+      groupDevice.ZoneGroupTopologyService.GetParsedZoneGroupState().then(async zones => {
         const zone = zones.find(zone =>
           zone.members.find(member => member.name.toLowerCase() === group.toLowerCase()));
         if (zone && zone.members.length > 1) {
-          await this.leaveGroup(device);
+          await this.leaveGroup(groupDevice);
           await new Promise(resolve => setTimeout(resolve, 500));
         }
         for (let i = 1; i < preset.length; i++) {
