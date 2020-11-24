@@ -41,6 +41,7 @@ export class AppController {
   ttsTest() {
     this.appService.getDeviceByName('Alexander').PlayTTS({
       endpoint: 'https://sonos.wyss.tech/api/tts',
+      lang: 'de',
       text: 'test',
     }).then(console.log).catch(console.error);
   }
