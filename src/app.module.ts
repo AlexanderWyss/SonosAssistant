@@ -12,6 +12,12 @@ import { PresetService } from './preset/preset.service';
         rootPath: join(__dirname, './client/'),
       },
     ),
+    ServeStaticModule.forRoot(
+      {
+        rootPath: join(__dirname, './tts/'),
+        serveRoot: '/tts',
+      },
+    ),
   ],
   controllers: [AppController],
   providers: [AppService, PresetService],
