@@ -33,7 +33,7 @@ export class AppController {
   @HttpCode(200)
   ttsGenerate(@Body('text') text: string) {
     return {
-      uri: 'https://sonos.wyss.tech/assets/test.mp3'
+      uri: 'https://sonos.wyss.tech/assets/test.wav'
     }
   }
 
