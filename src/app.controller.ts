@@ -23,10 +23,25 @@ export class AppController {
   apiRemove(@Body('text') text: string): void {
     this.appService.remove(text).catch(console.error);
   }
+
   @Post('api/preset')
   @HttpCode(200)
   apiPreset(@Body('name') name: string): void {
     this.appService.preset(name);
+  }
+
+  @Post('api/tts')
+  apiTts(@Body('text') text: string) {
+    const split = text.trim().split(' ');
+    if (split && split.length > 1) {
+      const device = split.shift();
+      const text = split.join(' ');
+      this.appService.getDeviceByName(device).PlayTTS({
+        endpoint: 'https://tts.wyss.tech/api/tts',
+        lang: 'de',
+        text: text,
+      }).then(console.log).catch(console.error);
+    }
   }
 
   @Post('test/tts')
@@ -34,7 +49,7 @@ export class AppController {
     this.appService.getDeviceByName(device).PlayTTS({
       endpoint: 'https://tts.wyss.tech/api/tts',
       lang: 'de',
-      text: text
+      text: text,
     }).then(console.log).catch(console.error);
   }
 
