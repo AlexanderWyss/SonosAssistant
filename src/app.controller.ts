@@ -32,11 +32,12 @@ export class AppController {
 
   @Post('api/tts')
   apiTts(@Body('text') text: string) {
+    console.log("api tts: " + text);
     const split = text.trim().split(' ');
     if (split && split.length > 1) {
       const device = split.shift();
       const text = split.join(' ');
-      this.appService.getDeviceByName(device).PlayTTS({
+      this.appService.getDeviceByPhonetic(device).PlayTTS({
         endpoint: 'https://tts.wyss.tech/api/tts',
         lang: 'de',
         text: text,
