@@ -29,20 +29,12 @@ export class AppController {
     this.appService.preset(name);
   }
 
-  @Post('api/tts')
-  @HttpCode(200)
-  ttsGenerate(@Body('text') text: string) {
-    return {
-      uri: 'https://sonos.wyss.tech/assets/test.wav'
-    }
-  }
-
-  @Get('test/tts')
-  ttsTest() {
-    this.appService.getDeviceByName('Alexander').PlayTTS({
-      endpoint: 'https://sonos.wyss.tech/api/tts',
+  @Post('test/tts')
+  ttsTest(@Body('text') text: string, @Body('device') device: string) {
+    this.appService.getDeviceByName(device).PlayTTS({
+      endpoint: 'https://tts.wyss.tech/api/tts',
       lang: 'de',
-      text: 'test',
+      text: text
     }).then(console.log).catch(console.error);
   }
 
