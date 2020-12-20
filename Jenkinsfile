@@ -1,10 +1,25 @@
 node {
-    def dockerImage
     stage('Clone repository') {
         checkout scm
     }
+    stage('Dependencies Server') {
+        sh 'npm i'
+    }
+    stage('Build Server') {
+        sh 'npm run build --prod'
+    }
+    stage('Dependencies Client') {
+        dir('client') {
+            sh 'npm i'
+        }
+    }
+    stage('Build Client') {
+        dir('client') {
+            sh 'npm run build --prod'
+        }
+    }
     stage('Build image') {
-        dockerImage = docker.build("alexanderwyss/sonos-assistant")
+        docker.build("alexanderwyss/sonos-assistant")
     }
     stage('Deploy') {
         sh 'docker stop sonos-assistant || true && docker rm -f sonos-assistant || true'
